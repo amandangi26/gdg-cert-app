@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import * as XLSX from 'xlsx';
-import { writeFile, mkdir } from 'fs/promises';
-import path from 'path';
 
 export async function POST(req: NextRequest) {
     try {
@@ -13,9 +11,6 @@ export async function POST(req: NextRequest) {
         if (!file && !template) {
             return NextResponse.json({ error: 'No files received.' }, { status: 400 });
         }
-
-        const uploadDir = path.join(process.cwd(), 'public', 'uploads');
-        await mkdir(uploadDir, { recursive: true });
 
         let message = '';
 
@@ -51,15 +46,17 @@ export async function POST(req: NextRequest) {
         if (template) {
             const bytes = await template.arrayBuffer();
             const buffer = Buffer.from(bytes);
-            await writeFile(path.join(uploadDir, 'certificate_template.pdf'), buffer);
 
-            // Save config to DB just in case we want to track it, or just rely on FS
+            // Convert to Base64 string to store in DB
+            // This avoids writing to the read-only filesystem on Vercel
+            const base64Template = buffer.toString('base64');
+
             await prisma.config.upsert({
-                where: { key: 'template_path' },
-                update: { value: '/uploads/certificate_template.pdf' },
-                create: { key: 'template_path', value: '/uploads/certificate_template.pdf' },
+                where: { key: 'template_data' },
+                update: { value: base64Template },
+                create: { key: 'template_data', value: base64Template },
             });
-            message += 'Template uploaded successfully.';
+            message += 'Template uploaded successfully (stored in database).';
         }
 
         return NextResponse.json({ message, success: true });

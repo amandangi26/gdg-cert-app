@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/db';
 import { generateCertificate } from '@/lib/pdf-generator';
+import fs from 'fs/promises';
+import path from 'path';
 
 export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
@@ -19,21 +21,31 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({ error: 'Certificate not found. Please check your email or contact the organizer.' }, { status: 404 });
         }
 
-        // Get template path from config or default
-        const config = await prisma.config.findUnique({ where: { key: 'template_path' } });
-        // Remove leading slash if present for fs.readFile in lib/pdf-generator which uses path.join(process.cwd(), 'public', templatePath)
-        // Actually my lib/pdf-generator uses path.join(process.cwd(), 'public', templatePath).
-        // If value is '/uploads/...' then path.join might treat it as absolute if it starts with /.
-        // path.join('/foo', '/bar') -> '/bar'.
-        // So I should ensure templatePath is relative to public.
+        // 1. Try to get template from DB (Base64)
+        const config = await prisma.config.findUnique({ where: { key: 'template_data' } });
 
-        let templatePath = config?.value || 'uploads/certificate_template.pdf';
-        if (templatePath.startsWith('/')) {
-            templatePath = templatePath.substring(1);
+        let templateBytes: Uint8Array;
+
+        if (config && config.value) {
+            // Convert Base64 string back to Buffer
+            templateBytes = new Uint8Array(Buffer.from(config.value, 'base64'));
+        } else {
+            // 2. Fallback to default file in public/uploads
+            // Note: In Vercel, process.cwd() is the root. public files are usually copied to the output.
+            // However, reading from public/ at runtime in serverless can be tricky.
+            // Best practice is to use path.join(process.cwd(), 'public', ...)
+            const defaultPath = path.join(process.cwd(), 'public', 'uploads', 'certificate_template.pdf');
+            try {
+                const fileBuffer = await fs.readFile(defaultPath);
+                templateBytes = new Uint8Array(fileBuffer);
+            } catch (err) {
+                console.error('Failed to read default template:', err);
+                return NextResponse.json({ error: 'Certificate template not found.' }, { status: 500 });
+            }
         }
 
         // Generate PDF
-        const pdfBytes = await generateCertificate(attendee.name, templatePath);
+        const pdfBytes = await generateCertificate(attendee.name, templateBytes);
 
         // Return PDF
         return new NextResponse(Buffer.from(pdfBytes), {

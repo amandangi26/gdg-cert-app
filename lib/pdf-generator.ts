@@ -1,21 +1,16 @@
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
-import fs from 'fs/promises';
-import path from 'path';
 
 // Configuration for name placement
 // Adjust these values to fit your specific certificate template
 const CONFIG = {
-    fontSize: 40, // Increased font size
+    fontSize: 60, // Increased font size
     yOffset: 0, // Offset from center. Positive = up, Negative = down.
     color: rgb(0.2, 0.2, 0.2), // Dark gray
 };
 
-export async function generateCertificate(name: string, templatePath: string): Promise<Uint8Array> {
+export async function generateCertificate(name: string, templateBytes: Uint8Array): Promise<Uint8Array> {
     try {
-        const fullPath = path.join(process.cwd(), 'public', templatePath);
-        const existingPdfBytes = await fs.readFile(fullPath);
-
-        const pdfDoc = await PDFDocument.load(existingPdfBytes);
+        const pdfDoc = await PDFDocument.load(templateBytes);
 
         // Use Standard Font (Helvetica Bold is very similar to Roboto/Google Sans)
         // This avoids external dependency issues and ensures reliability
