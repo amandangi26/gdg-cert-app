@@ -105,9 +105,10 @@ export default function AdminPage() {
                         </div>
                         <div className="flex items-center">
                             <button
-                                onClick={() => {
-                                    document.cookie = 'admin_session=; Max-Age=0; path=/;';
+                                onClick={async () => {
+                                    await fetch('/api/auth/logout', { method: 'POST' });
                                     router.push('/login');
+                                    router.refresh();
                                 }}
                                 className="text-gray-500 hover:text-red-600 flex items-center gap-1 text-sm font-medium transition-colors"
                             >

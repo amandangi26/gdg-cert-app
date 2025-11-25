@@ -5,7 +5,7 @@ import path from 'path';
 // Configuration for name placement
 // Adjust these values to fit your specific certificate template
 const CONFIG = {
-    fontSize: 48,
+    fontSize: 40, // Increased font size
     yOffset: 0, // Offset from center. Positive = up, Negative = down.
     color: rgb(0.2, 0.2, 0.2), // Dark gray
 };
@@ -16,20 +16,21 @@ export async function generateCertificate(name: string, templatePath: string): P
         const existingPdfBytes = await fs.readFile(fullPath);
 
         const pdfDoc = await PDFDocument.load(existingPdfBytes);
+
+        // Use Standard Font (Helvetica Bold is very similar to Roboto/Google Sans)
+        // This avoids external dependency issues and ensures reliability
+        const font = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+
         const pages = pdfDoc.getPages();
         const firstPage = pages[0];
         const { width, height } = firstPage.getSize();
-
-        // Embed font - StandardFonts.HelveticaBold is a safe bet
-        // For custom fonts, you'd need to load the font file and use pdfDoc.embedFont(fontBytes)
-        const font = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
 
         // Calculate text width to center it
         const textWidth = font.widthOfTextAtSize(name, CONFIG.fontSize);
 
         // Calculate position
         const x = (width - textWidth) / 2;
-        const y = (height / 2) + CONFIG.yOffset;
+        const y = (height / 2) - 30 + CONFIG.yOffset;
 
         // Draw text
         firstPage.drawText(name, {
