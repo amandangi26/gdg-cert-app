@@ -101,11 +101,11 @@ export default function Home() {
                 </label>
                 <div className="relative group">
                   <input
-                    type="email"
-                    id="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="name@example.com"
+                    type="text"
+                    id="ticketId"
+                    value={ticketId}
+                    onChange={(e) => setTicketId(e.target.value)}
+                    placeholder="e.g. GOOGE252737148"
                     className="w-full pl-11 pr-4 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 focus:ring-[#4285F4] focus:border-transparent transition-all outline-none text-white placeholder-gray-400 group-hover:bg-white/10"
                     required
                   />
@@ -164,7 +164,7 @@ export default function Home() {
 
               {!error && !downloadUrl && !loading && (
                 <div className="text-center text-gray-400 text-sm py-4">
-                  Enter your email to get started
+                  Enter your Ticket ID to get started
                 </div>
               )}
             </div>
