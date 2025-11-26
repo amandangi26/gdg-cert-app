@@ -47,7 +47,7 @@ export async function GET(req: NextRequest) {
         }
 
         // Generate PDF
-        const pdfBytes = await generateCertificate(attendee.name, templateBytes);
+        const pdfBytes = await generateCertificate(attendee.name, templateBytes, attendee.ticketId);
 
         // Return PDF
         return new NextResponse(Buffer.from(pdfBytes), {

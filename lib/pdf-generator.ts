@@ -1,4 +1,5 @@
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
+import QRCode from 'qrcode';
 
 // Configuration for name placement
 // Adjust these values to fit your specific certificate template
@@ -6,9 +7,11 @@ const CONFIG = {
     fontSize: 60, // Increased font size
     yOffset: 0, // Offset from center. Positive = up, Negative = down.
     color: rgb(0.2, 0.2, 0.2), // Dark gray
+    qrSize: 100, // Size of QR code
+    qrBottomOffset: 50, // Distance from bottom
 };
 
-export async function generateCertificate(name: string, templateBytes: Uint8Array): Promise<Uint8Array> {
+export async function generateCertificate(name: string, templateBytes: Uint8Array, ticketId: string): Promise<Uint8Array> {
     try {
         const pdfDoc = await PDFDocument.load(templateBytes);
 
@@ -34,6 +37,23 @@ export async function generateCertificate(name: string, templateBytes: Uint8Arra
             size: CONFIG.fontSize,
             font: font,
             color: CONFIG.color,
+        });
+
+        // Generate QR Code
+        const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+        const verifyUrl = `${appUrl}/verify/${ticketId}`;
+        const qrDataUrl = await QRCode.toDataURL(verifyUrl);
+        const qrImage = await pdfDoc.embedPng(qrDataUrl);
+
+        // Draw QR Code at bottom center
+        const qrX = (width - CONFIG.qrSize) / 2;
+        const qrY = CONFIG.qrBottomOffset;
+
+        firstPage.drawImage(qrImage, {
+            x: qrX,
+            y: qrY,
+            width: CONFIG.qrSize,
+            height: CONFIG.qrSize,
         });
 
         const pdfBytes = await pdfDoc.save();
