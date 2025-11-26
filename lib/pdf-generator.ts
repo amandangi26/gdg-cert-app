@@ -1,12 +1,15 @@
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import QRCode from 'qrcode';
+import fontkit from '@pdf-lib/fontkit';
+import fs from 'fs';
+import path from 'path';
 
 // Configuration for name placement
 // Adjust these values to fit your specific certificate template
 const CONFIG = {
     fontSize: 60, // Increased font size
     yOffset: 0, // Offset from center. Positive = up, Negative = down.
-    color: rgb(0.2, 0.2, 0.2), // Dark gray
+    color: rgb(0.27, 0.54, 0.97), // #4589f8
     qrSize: 100, // Size of QR code
     qrBottomOffset: 60, // Distance from bottom
 };
@@ -14,10 +17,12 @@ const CONFIG = {
 export async function generateCertificate(name: string, templateBytes: Uint8Array, ticketId: string): Promise<Uint8Array> {
     try {
         const pdfDoc = await PDFDocument.load(templateBytes);
+        pdfDoc.registerFontkit(fontkit);
 
-        // Use Standard Font (Helvetica Bold is very similar to Roboto/Google Sans)
-        // This avoids external dependency issues and ensures reliability
-        const font = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+        // Load Custom Font
+        const fontPath = path.join(process.cwd(), 'public', 'fonts', 'GreatVibes-Regular.ttf');
+        const fontBytes = fs.readFileSync(fontPath);
+        const font = await pdfDoc.embedFont(fontBytes);
 
         const pages = pdfDoc.getPages();
         const firstPage = pages[0];
