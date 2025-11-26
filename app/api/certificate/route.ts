@@ -6,19 +6,21 @@ import path from 'path';
 
 export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
-    const email = searchParams.get('email');
+    const ticketId = searchParams.get('ticketId');
 
-    if (!email) {
-        return NextResponse.json({ error: 'Email is required' }, { status: 400 });
+    if (!ticketId) {
+        return NextResponse.json({ error: 'Ticket Order ID is required' }, { status: 400 });
     }
 
     try {
         const attendee = await prisma.attendee.findUnique({
-            where: { email: email.toLowerCase().trim() },
+            where: { ticketId: ticketId.trim() },
         });
 
         if (!attendee) {
-            return NextResponse.json({ error: 'Certificate not found. Please check your email or contact the organizer.' }, { status: 404 });
+            return NextResponse.json({
+                error: 'It seems you didn’t check-in at the event, so no certificate is found. Please enter the valid ticket order ID you checked in with.'
+            }, { status: 404 });
         }
 
         // 1. Try to get template from DB (Base64)

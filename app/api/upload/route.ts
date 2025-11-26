@@ -24,18 +24,18 @@ export async function POST(req: NextRequest) {
 
             let count = 0;
             for (const row of data) {
-                // Expecting Column 1: Name, Column 2: Email
+                // Expecting Column 1: Ticket Order ID, Column 2: Name
                 // Row might be empty or have fewer columns
                 if (!row || row.length < 2) continue;
 
-                const name = row[0]?.toString().trim();
-                const email = row[1]?.toString().trim().toLowerCase();
+                const ticketId = row[0]?.toString().trim();
+                const name = row[1]?.toString().trim();
 
-                if (name && email) {
+                if (name && ticketId) {
                     await prisma.attendee.upsert({
-                        where: { email },
+                        where: { ticketId },
                         update: { name },
-                        create: { name, email },
+                        create: { name, ticketId },
                     });
                     count++;
                 }

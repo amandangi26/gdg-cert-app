@@ -5,7 +5,7 @@ import { Search, Download, AlertCircle, Loader2, CheckCircle, Sparkles } from 'l
 import Image from 'next/image';
 
 export default function Home() {
-  const [email, setEmail] = useState('');
+  const [ticketId, setTicketId] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [downloadUrl, setDownloadUrl] = useState<string | null>(null);
@@ -13,7 +13,7 @@ export default function Home() {
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email) return;
+    if (!ticketId) return;
 
     setLoading(true);
     setError('');
@@ -21,7 +21,7 @@ export default function Home() {
     setAttendeeName('');
 
     try {
-      const res = await fetch(`/api/certificate?email=${encodeURIComponent(email)}`);
+      const res = await fetch(`/api/certificate?ticketId=${encodeURIComponent(ticketId)}`);
 
       if (res.ok) {
         const blob = await res.blob();
@@ -96,8 +96,8 @@ export default function Home() {
           <div className="w-full max-w-md mx-auto bg-white/10 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 animate-in fade-in slide-in-from-right-8 duration-1000 delay-100">
             <form onSubmit={handleSearch} className="space-y-6">
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-200 mb-2 ml-1">
-                  Registered Email Address
+                <label htmlFor="ticketId" className="block text-sm font-medium text-gray-200 mb-2 ml-1">
+                  Ticket Order ID
                 </label>
                 <div className="relative group">
                   <input

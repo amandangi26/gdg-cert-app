@@ -13,7 +13,7 @@ datasource db {
 model Attendee {
   id        String   @id @default(cuid())
   name      String
-  email     String   @unique
+  ticketId  String   @unique
   createdAt DateTime @default(now())
 }
 

@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 interface Attendee {
     id: string;
     name: string;
-    email: string;
+    ticketId: string;
     createdAt: string;
 }
 
@@ -215,7 +215,7 @@ export default function AdminPage() {
                                 <thead className="bg-gray-50 text-gray-700 font-semibold uppercase text-xs">
                                     <tr>
                                         <th className="px-6 py-4">Name</th>
-                                        <th className="px-6 py-4">Email</th>
+                                        <th className="px-6 py-4">Ticket ID</th>
                                         <th className="px-6 py-4">Date Added</th>
                                         <th className="px-6 py-4 text-right">Actions</th>
                                     </tr>
@@ -231,7 +231,7 @@ export default function AdminPage() {
                                         attendees.map((attendee) => (
                                             <tr key={attendee.id} className="hover:bg-gray-50 transition-colors">
                                                 <td className="px-6 py-4 font-medium text-gray-900">{attendee.name}</td>
-                                                <td className="px-6 py-4">{attendee.email}</td>
+                                                <td className="px-6 py-4 font-mono text-xs">{attendee.ticketId}</td>
                                                 <td className="px-6 py-4">{new Date(attendee.createdAt).toLocaleDateString()}</td>
                                                 <td className="px-6 py-4 text-right">
                                                     <button
