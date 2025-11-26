@@ -29,9 +29,12 @@ export async function POST(req: NextRequest) {
                 if (!row || row.length < 2) continue;
 
                 const ticketId = row[0]?.toString().trim();
-                const name = row[1]?.toString().trim();
+                let name = row[1]?.toString().trim();
 
                 if (name && ticketId) {
+                    // Convert name to Title Case
+                    name = name.toLowerCase().split(' ').map((word: string) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+
                     await prisma.attendee.upsert({
                         where: { ticketId },
                         update: { name },
