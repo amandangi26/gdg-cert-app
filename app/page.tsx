@@ -105,7 +105,7 @@ export default function Home() {
                     id="ticketId"
                     value={ticketId}
                     onChange={(e) => setTicketId(e.target.value)}
-                    placeholder="e.g. GOOGE252737148"
+                    placeholder="e.g. GOOGE25273XXXX"
                     className="w-full pl-11 pr-4 py-4 bg-white/5 border border-white/10 rounded-2xl focus:ring-2 focus:ring-[#4285F4] focus:border-transparent transition-all outline-none text-white placeholder-gray-400 group-hover:bg-white/10"
                     required
                   />

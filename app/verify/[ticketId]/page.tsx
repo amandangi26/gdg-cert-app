@@ -54,7 +54,7 @@ export default async function VerifyPage({ params }: PageProps) {
                     </div>
                     <div>
                         <p className="text-xs text-gray-400 uppercase tracking-wider font-semibold">Event</p>
-                        <p className="text-gray-700">GDG Cloud Motihari 2025</p>
+                        <p className="text-gray-700">DevFest Motihari 2025 (GDG Cloud Motihari)</p>
                     </div>
                 </div>
 

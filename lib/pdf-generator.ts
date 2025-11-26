@@ -40,7 +40,7 @@ export async function generateCertificate(name: string, templateBytes: Uint8Arra
         });
 
         // Generate QR Code
-        const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://your-project-name.vercel.app';
+        const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://gdg-cert-app.vercel.app/';
         const verifyUrl = `${appUrl}/verify/${ticketId}`;
         const qrDataUrl = await QRCode.toDataURL(verifyUrl);
         const qrImage = await pdfDoc.embedPng(qrDataUrl);
